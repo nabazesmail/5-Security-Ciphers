@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+ 
+
+  <head>
+    <!-- Javascript -->
+    <script src="https://cdn.jsdelivr.net/npm/halfmoon@1.1.1/js/halfmoon.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjs@9.2.0/lib/browser/math.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js"></script>
+    <script src="js/frequency.js"></script>
+    <script src="js/affine.js"></script>
+    <script src="js/attack.js"></script>
+
+    <link rel="stylesheet" href="./Css/style1.css" />
+
+    <!-- Meta tags -->
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"/>
+    <meta name="viewport" content="width=device-width"/>
+
+    <!-- Favicon and title -->
+    <link rel="icon" href="img/favicon.png">
+    <title>Affine Cipher Breaker</title>
+
+    <!-- CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/halfmoon@1.1.1/css/halfmoon-variables.min.css" rel="stylesheet"/>
+  </head>
+  <body class="container-fluid with-custom-webkit-scrollbars with-custom-css-scrollbars" style="min-height:100vh" data-dm-shortcut-enabled="true" data-sidebar-shortcut-enabled="true" data-set-preferred-mode-onload="true">
+
+    <!-- Frequency Analysis Modal -->
+    <div class="modal modal-full ie-scroll-fix" id="modal-freq" tabindex="-1" role="dialog">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="row">
+            <h5 class="modal-title col-11">Frequency Analysis</h5>
+            <button type="button" class="btn btn-primary col-1" data-dismiss="modal">Close</button>
+          </div>
+          <div id="canvas">
+            <canvas id="freq_chart" class="h-three-quarter"></canvas>
+          </div>
+          <!-- System of congruences -->
+          <div class="mt-20">
+            <h5 class="text-center">System of Congruences</h5>
+            
+            <div class="row">
+              <div class="col-2"></div>
+
+              <!-- 1st mapping -->
+              <div class="col-4">
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text">Mapping 1</span>
+                  </div>
+                  <input type="text" value="E" class="form-control w-half" id="p1" placeholder="1st Plaintext letter" maxlength="1">
+                  <input type="text" class="form-control w-half" id="c1" placeholder="1st Ciphertext letter" maxlength="1">
+                </div>
+              </div>
+
+              <!-- 2nd mapping -->
+              <div class="col-4">
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text">Mapping 2</span>
+                  </div>
+                  <input type="text" value="T" class="form-control w-half" id="p2" placeholder="2st Plaintext letter" maxlength="1">
+                  <input type="text" class="form-control w-half" id="c2" placeholder="2st Ciphertext letter" maxlength="1">
+                </div>
+              </div>
+
+              <div class="col-2"></div>
+            </div>
+
+            <!-- Solve button -->
+            <div class="text-center">
+              <p></p>
+              <button type="button" class="btn btn-primary" id="solve">Solve</button>
+              <p id="congruency"></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Page wrapper start -->
+    <div class="page-wrapper">
+
+      <!-- Sticky alerts (toasts) -->
+      <div class="sticky-alerts"></div>
+
+      <!-- Content wrapper start -->
+      <div class="content-wrapper">
+
+        <!-- Navbar start -->
+        <nav class="navbar justify-content-between align-middle">
+          <div class="navbar-content">
+            <h4 class="pl-5">Affine Cipher Breaker</h4>
+          </div>
+          <div class="navbar-content">
+            <a href="https://github.com/WillStOnge/Affine-Cipher-Breaker/"><img class="text-decoration-none pt-5" src="img/github.png" alt="GitHub Repo"></a>
+          </div>
+        </nav>
+        <!-- Navbar end -->
+
+        <!-- Cipher component start -->
+        <div class="card w-full ml-0">
+          <div class="row">
+            
+            <!-- Input and output textareas -->
+            <div class="col-8 text-right">
+              <textarea placeholder="Input" class="form-control" id="input"></textarea>
+              <button class="btn mt-5" id="clear">Clear</button>
+              <textarea placeholder="Output" class="form-control mt-10" id="output" readonly="readonly"></textarea>
+            </div>
+
+            <!-- Blank region -->
+            <div class="col-2"></div>
+
+            <!-- Keys and buttons -->
+            <div class="col-2" height="100%">
+              <div class="text-right">
+                <select class="form-control" id="cipher">
+                  <option value="affine" selected="selected">Affine</option>
+                </select>
+                
+                <hr>
+                <p></p>
+
+                <input type="number" min="1" max="25" step="2" placeholder="Multiplicative Key" class="form-control" id="mKey">
+                <p></p>
+                <input type="number" min="0" max="25" placeholder="Additive Key" class="form-control" id="bKey">
+
+                <p></p>
+                <hr>
+                <p></p>
+
+                <div class="text-center">
+                  <button class="btn" id="encipher_button">Encipher</button>
+                  <button class="btn" id="decipher_button">Decipher</button>
+
+                  <p></p>
+
+                  <div class="custom-checkbox d-inline-block mr-10">
+                    <input type="checkbox" id="switchOrder" value="">
+                    <label for="switchOrder">Switch Affine Order?</label>
+                  </div>
+
+                  <p></p>
+
+                  
+                </div>
+
+              </div>
+            </div>
+
+          </div>
+        </div>
+       
+        <footer class="text-center">
+          <h1>Types: </h1>
+          <br>
+          <button class="btn1"><a class="A" href="C:\Users\ZEETA\OneDrive\Desktop\Cipher_Encoder_Decoder-main\index.html">Ceaser</a></button>
+        <button class="btn1"><a class="A" href="C:\Users\ZEETA\OneDrive\Desktop\Cipher_Encoder_Decoder-main\index2.html">Affine</a></button>
+        <button class="btn1"><a class="A" href="C:\Users\ZEETA\OneDrive\Desktop\Cipher_Encoder_Decoder-main\index3.html">vigener</a></button>
+        <button class="btn1"><a class="A" href="C:\Users\ZEETA\OneDrive\Desktop\Cipher_Encoder_Decoder-main\index4.html">colmunar</a></button>
+        <button class="btn1"><a class="A" href="C:\Users\ZEETA\OneDrive\Desktop\Cipher_Encoder_Decoder-main\index5.html">simple</a></button>
+        </footer>
+        <!-- Footer end -->
+      
+      </div>
+      <!-- Content wrapper end -->
+
+    </div>
+    <!-- Page wrapper end -->
+    
+  </body>
+  <script src="js/listeners.js"></script>
+</html>
