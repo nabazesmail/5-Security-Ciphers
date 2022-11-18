@@ -50,7 +50,7 @@ $('#encipher_button').click(function() {
         if (output === null)
         {
             halfmoon.initStickyAlert({
-                content: "Invalid multiplicative key. It must be odd and not 13.",
+                content: "Invalid multiplicative key. It must be odd.",
                 title: "Error",
                 alertType: "alert-danger",
                 timeShown: 3000
